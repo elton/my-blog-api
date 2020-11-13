@@ -1,0 +1,8 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/v1/hello/:name       --> github.com/elton/my-blog-api/api/controllers.Hello (3 handlers)
+[GIN] 2020/11/13 - 14:14:01 |[97;42m 200 [0m|       53.67µs |             ::1 |[97;44m GET     [0m "/api/v1/hello/elton"
