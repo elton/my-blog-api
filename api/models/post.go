@@ -16,7 +16,7 @@ type Post struct {
 	Comments   []Comment  `json:"comments"`
 	Likes      []Like     `json:"likes"`
 	UserID     uint       `gorm:"not null;index:idx_user_id" json:"user_id"`
-	CreateAt   time.Time  `json:"create_at"`
+	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 	Deleted    gorm.DeletedAt
 }

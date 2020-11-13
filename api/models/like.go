@@ -11,7 +11,7 @@ type Like struct {
 	ID        uint      `gorm:"primary_key;auto_increment" json:"id"`
 	PostID    uint      `gorm:"not null;index:idx_post_id" json:"post_id"`
 	UserID    uint      `gorm:"not null;index:idx_user_id" json:"user_id"`
-	CreateAt  time.Time `json:"create_at"`
+	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Deleted   gorm.DeletedAt
 }

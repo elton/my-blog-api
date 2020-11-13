@@ -1,0 +1,5 @@
+package responses
+
+func JSON() {
+
+}

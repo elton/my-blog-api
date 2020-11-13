@@ -16,7 +16,7 @@ type User struct {
 	Posts     []Post    `json:"posts"`
 	Likes     []Like    `json:"likes"`
 	Comments  []Comment `json:"comments"`
-	CreateAt  time.Time `json:"create_at"`
+	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Deleted   gorm.DeletedAt
 }
