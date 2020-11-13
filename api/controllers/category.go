@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/elton/my-blog-api/api/models"
+	"github.com/elton/my-blog-api/api/responses"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,13 +12,13 @@ import (
 func (s *Server) CreateCategory(ctx *gin.Context) {
 	category := models.Category{}
 	if err := ctx.ShouldBindJSON(&category); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "data": nil, "error": err.Error()})
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
 		return
 	}
 	cateCreated, err := category.SaveCategory(s.DB)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "data": nil, "error": err.Error()})
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
 		return
 	}
-	ctx.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "data": cateCreated, "error": nil})
+	responses.ResultJSON(ctx, http.StatusCreated, cateCreated, nil)
 }
