@@ -20,8 +20,8 @@ import (
 
 // Server server struct
 type Server struct {
-	DB      *gorm.DB
-	Routers *gin.Engine
+	DB     *gorm.DB
+	Router *gin.Engine
 }
 
 // Initialize initialize the server connect database and configure the routers
@@ -57,10 +57,6 @@ func (s *Server) Initialize(DbDriver, DbUser, DbPasswd, DbHost, DbPort, DbName s
 		// database migration
 		s.DB.Debug().AutoMigrate(&models.Post{})
 	}
-
-	s.Routers = gin.Default()
-
-	s.initializeRouter()
 }
 
 // Run run the server.
@@ -83,9 +79,13 @@ func (s *Server) Run(port string) {
 	// write the log to file and console at the same time.
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
+	s.Router = gin.Default()
+
+	s.initializeRouter()
+
 	srv := &http.Server{
 		Addr:           port,
-		Handler:        s.Routers,
+		Handler:        s.Router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
