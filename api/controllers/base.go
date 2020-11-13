@@ -24,16 +24,16 @@ type Server struct {
 	Router *gin.Engine
 }
 
-// Initialize initialize the server connect database and configure the routers
-func (s *Server) Initialize(DbDriver, DbUser, DbPasswd, DbHost, DbPort, DbName string) {
+// InitializeDB initialize the server connect database and configure the routers
+func (s *Server) InitializeDB(DbDriver, DbUser, DbPasswd, DbHost, DbPort, DbName string) {
 	var err error
 	if DbDriver == "mysql" {
 		DBURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", DbUser, DbPasswd, DbHost, DbPort, DbName)
 		// GORM 定义了这些日志级别：Silent、Error、Warn、Info
 		s.DB, err = gorm.Open(mysql.Open(DBURL), &gorm.Config{
-			Logger:                                   logger.Default.LogMode(logger.Info),
-			PrepareStmt:                              true,
-			DisableForeignKeyConstraintWhenMigrating: true,
+			Logger:      logger.Default.LogMode(logger.Info),
+			PrepareStmt: true,
+			// DisableForeignKeyConstraintWhenMigrating: true,
 			// SkipDefaultTransaction:                   true,
 		})
 		if err != nil {
@@ -55,7 +55,7 @@ func (s *Server) Initialize(DbDriver, DbUser, DbPasswd, DbHost, DbPort, DbName s
 		// SetConnMaxLifetime 设置了连接可复用的最大时间。
 		sqlDB.SetConnMaxLifetime(5 * time.Minute)
 		// database migration
-		s.DB.Debug().AutoMigrate(&models.Post{})
+		s.DB.Debug().AutoMigrate(&models.User{}, &models.Post{}, &models.Category{}, &models.Comment{}, &models.Like{})
 	}
 }
 
