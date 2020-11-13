@@ -15,6 +15,12 @@ func (s *Server) CreateCategory(ctx *gin.Context) {
 		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
 		return
 	}
+
+	if err := category.Validate(); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+
 	cateCreated, err := category.SaveCategory(s.DB)
 	if err != nil {
 		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
