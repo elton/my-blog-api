@@ -10,5 +10,8 @@ func (s *Server) initializeRouter() {
 	{
 		v1.GET("/hello/:name", s.Hello)
 		v1.POST("/categories", middlewares.SetMiddlewareJSON(), s.CreateCategory)
+		v1.GET("/categories/:id", middlewares.SetMiddlewareJSON(), s.FindCategoryByID)
+		v1.GET("/categories/", middlewares.SetMiddlewareJSON(), s.FindCategoryByName)
+		v1.GET("/categories", middlewares.SetMiddlewareJSON(), s.FindCategories)
 	}
 }

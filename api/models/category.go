@@ -9,7 +9,7 @@ import (
 
 // Category the category for post.
 type Category struct {
-	ID        uint      `gorm:"primary_key;auto_increment" json:"id"`
+	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	Name      string    `gorm:"size:256;uniqueIndex:idx_name;not null" json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -30,4 +30,36 @@ func (c *Category) SaveCategory(db *gorm.DB) (*Category, error) {
 		return nil, err
 	}
 	return c, nil
+}
+
+// FindCategoryByID find a specific category by ID.
+func (c *Category) FindCategoryByID(db *gorm.DB, id uint64) (*Category, error) {
+	err := db.Model(&Category{}).Where("id = ?", id).Take(&c).Error
+	if err == gorm.ErrRecordNotFound {
+		return &Category{}, errors.New("Category Not Found")
+	} else if err != nil {
+		return &Category{}, err
+	}
+	return c, nil
+}
+
+// FindCategories returns a list of categories in first 100 results.
+func (c *Category) FindCategories(db *gorm.DB) (*[]Category, error) {
+	categories := []Category{}
+	if err := db.Model(&Category{}).Limit(100).Find(&categories).Error; err != nil {
+		return &[]Category{}, err
+	}
+	return &categories, nil
+}
+
+// FindCategoriesByName returns a list of categories by name.
+func (c *Category) FindCategoriesByName(db *gorm.DB, name string) (*[]Category, error) {
+	categories := []Category{}
+	err := db.Model(&Category{}).Where("name like ?", "%"+name+"%").Find(&categories).Error
+	if err == gorm.ErrRecordNotFound || len(categories) <= 0 {
+		return &[]Category{}, errors.New("Category Not Found")
+	} else if err != nil {
+		return &[]Category{}, err
+	}
+	return &categories, nil
 }
