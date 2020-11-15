@@ -113,9 +113,10 @@ func (s *Server) DeleteCategory(ctx *gin.Context) {
 		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
 		return
 	}
-	// categoryDeleted, err := category.FindCategoryByID(s.DB, id)
 
-	if err := category.Delete(s.DB, id); err != nil {
+	category.ID = id
+
+	if err := category.Delete(s.DB); err != nil {
 		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
 		return
 	}

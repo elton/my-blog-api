@@ -74,8 +74,8 @@ func (c *Category) UpdateCategory(db *gorm.DB) error {
 }
 
 // Delete a category.
-func (c *Category) Delete(db *gorm.DB, cid uint64) error {
-	if err := db.Delete(&Category{}, cid).Error; err != nil {
+func (c *Category) Delete(db *gorm.DB) error {
+	if err := db.Delete(&Category{}, c.ID).Error; err != nil {
 		return err
 	}
 	return nil
