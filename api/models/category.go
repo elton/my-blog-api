@@ -63,3 +63,12 @@ func (c *Category) FindCategoriesByName(db *gorm.DB, name string) (*[]Category, 
 	}
 	return &categories, nil
 }
+
+// UpdateCategory updates a category.
+func (c *Category) UpdateCategory(db *gorm.DB) error {
+
+	if err := db.Model(&Category{}).Where("id = ?", c.ID).Updates(&c).Error; err != nil {
+		return err
+	}
+	return nil
+}

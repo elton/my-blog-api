@@ -19,7 +19,7 @@ func (s *Server) CreateCategory(ctx *gin.Context) {
 	}
 
 	if err := category.Validate(); err != nil {
-		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
 		return
 	}
 
@@ -73,4 +73,25 @@ func (s *Server) FindCategories(ctx *gin.Context) {
 		return
 	}
 	responses.ResultJSON(ctx, http.StatusOK, categoriesGotten, nil)
+}
+
+// UpdateCategory updates the category
+func (s *Server) UpdateCategory(ctx *gin.Context) {
+	category := models.Category{}
+
+	if err := ctx.ShouldBindJSON(&category); err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	if err := category.Validate(); err != nil {
+		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
+		return
+	}
+
+	if err := category.UpdateCategory(s.DB); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusOK, category, nil)
 }
