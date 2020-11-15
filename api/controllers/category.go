@@ -76,6 +76,14 @@ func (s *Server) FindCategories(ctx *gin.Context) {
 }
 
 // UpdateCategory updates the category
+// curl -i -X PUT \
+//   http://127.0.0.1:8080/api/v1/categories \
+//   -H 'cache-control: no-cache' \
+//   -H 'content-type: application/json' \
+//   -d '{
+//         "id":2,
+// 		   "name":"mysql server5"
+// }'
 func (s *Server) UpdateCategory(ctx *gin.Context) {
 	category := models.Category{}
 
@@ -94,4 +102,22 @@ func (s *Server) UpdateCategory(ctx *gin.Context) {
 		return
 	}
 	responses.ResultJSON(ctx, http.StatusOK, category, nil)
+}
+
+// DeleteCategory Delete a category.
+func (s *Server) DeleteCategory(ctx *gin.Context) {
+	category := models.Category{}
+
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	// categoryDeleted, err := category.FindCategoryByID(s.DB, id)
+
+	if err := category.Delete(s.DB, id); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusNoContent, nil, nil)
 }

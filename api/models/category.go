@@ -67,7 +67,15 @@ func (c *Category) FindCategoriesByName(db *gorm.DB, name string) (*[]Category, 
 // UpdateCategory updates a category.
 func (c *Category) UpdateCategory(db *gorm.DB) error {
 
-	if err := db.Model(&Category{}).Where("id = ?", c.ID).Updates(&c).Error; err != nil {
+	if err := db.Updates(&c).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// Delete a category.
+func (c *Category) Delete(db *gorm.DB, cid uint64) error {
+	if err := db.Delete(&Category{}, cid).Error; err != nil {
 		return err
 	}
 	return nil
