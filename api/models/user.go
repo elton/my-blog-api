@@ -112,6 +112,7 @@ func (u *User) FindUsersBy(db *gorm.DB) (*[]User, error) {
 
 // UpdateUser updates a user.
 func (u *User) UpdateUser(db *gorm.DB) error {
+	// Updates只更新不为空的字段
 	if err := db.Updates(&u).Error; err != nil {
 		return err
 	}

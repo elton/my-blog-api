@@ -135,3 +135,41 @@ func (s *Server) FindPosts(ctx *gin.Context) {
 	}
 	responses.ResultJSON(ctx, http.StatusOK, posts, nil)
 }
+
+// UpdatePost updates a post.
+func (s *Server) UpdatePost(ctx *gin.Context) {
+	pid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	var post models.Post
+	if err := ctx.ShouldBindJSON(&post); err != nil {
+		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
+		return
+	}
+	post.ID = pid
+
+	if err := post.UpdatePost(s.DB); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusOK, post, nil)
+}
+
+// DeletePost deletes a post.
+func (s *Server) DeletePost(ctx *gin.Context) {
+	pid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+	post := models.Post{ID: pid}
+	if err := post.DeletePost(s.DB); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusNoContent, nil, nil)
+
+}

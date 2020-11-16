@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // Post post struct
@@ -119,4 +120,26 @@ func (p *Post) FindPosts(db *gorm.DB) (*[]Post, error) {
 		return nil, err
 	}
 	return &posts, nil
+}
+
+// UpdatePost updates a post.
+func (p *Post) UpdatePost(db *gorm.DB) error {
+	// Updates只更新不为空的字段
+	if err := db.Updates(&p).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeletePost deletes a post.
+func (p *Post) DeletePost(db *gorm.DB) error {
+	postGotton, err := p.FindPostByID(db)
+	if err != nil {
+		return err
+	}
+	// 删除Post时， 也删除用户所有 many2many 记录，并同时删除该Post的评论和点赞信息
+	if err := db.Select(clause.Associations).Delete(postGotton).Error; err != nil {
+		return err
+	}
+	return nil
 }

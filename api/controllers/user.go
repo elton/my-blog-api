@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -99,10 +98,6 @@ func (s *Server) UpdateUser(ctx *gin.Context) {
 		return
 	}
 	user.ID = id
-	if err != nil {
-		responses.ResultJSON(ctx, http.StatusBadRequest, nil, errors.New("User not found"))
-		return
-	}
 
 	if err := user.UpdateUser(s.DB); err != nil {
 		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
