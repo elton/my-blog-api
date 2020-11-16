@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -10,7 +11,7 @@ import (
 type User struct {
 	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	Nickname  string    `gorm:"size:256;not null;uniqueIndex:idx_nickname;" json:"nickname"`
-	Type      uint8     `gorm:"not null;index:idx_type" json:"type"`
+	Type      uint8     `gorm:"not null;index:idx_type;default:1;comment:1:user, 2:admin" json:"type"`
 	Mobile    string    `gorm:"size:16;not null;uniqueIndex:idx_mobile;" json:"mobile"`
 	Email     string    `gorm:"size:128;not null;uniqueIndex:idx_email;" json:"email"`
 	Posts     []Post    `json:"posts"`
@@ -19,4 +20,108 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Deleted   gorm.DeletedAt
+}
+
+// Validate validates the user's struct.
+func (u *User) Validate() error {
+	if u.Nickname == "" {
+		return errors.New("Nickname field for user is required")
+	}
+	if u.Mobile == "" {
+		return errors.New("Mobile field for user is required")
+	}
+	if u.Email == "" {
+		return errors.New("Email field for user is required")
+	}
+	if u.Type != 1 && u.Type != 2 {
+		return errors.New("ID field for user is invalid")
+	}
+	return nil
+}
+
+// SaveUser create a new user.
+func (u *User) SaveUser(db *gorm.DB) (*User, error) {
+	if err := db.Create(&u).Error; err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+// FindUserByID returns a user matching specific ID.
+func (u *User) FindUserByID(db *gorm.DB) (*User, error) {
+	err := db.Where("id=?", u.ID).Take(&u).Error
+	if err == gorm.ErrRecordNotFound {
+		return &User{}, errors.New("User not found")
+	} else if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+// FindUsers returns a list of top 100 users.
+func (u *User) FindUsers(db *gorm.DB) (*[]User, error) {
+	users := []User{}
+	if err := db.Limit(100).Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return &users, nil
+}
+
+// FindUsersBy returns a list of users matching the specific conditions.
+func (u *User) FindUsersBy(db *gorm.DB) (*[]User, error) {
+	users := []User{}
+
+	if u.Nickname != "" {
+		err := db.Where("nickname like ?", "%"+u.Nickname+"%").Find(&users).Error
+		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
+			return &[]User{}, errors.New("User not found")
+		} else if err != nil {
+			return nil, err
+		}
+		return &users, nil
+	}
+	if u.Type == 1 || u.Type == 2 {
+		err := db.Where("type = ?", u.Type).Find(&users).Error
+		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
+			return &[]User{}, errors.New("User not found")
+		} else if err != nil {
+			return nil, err
+		}
+		return &users, nil
+	}
+	if u.Mobile != "" {
+		err := db.Where("mobile = ?", u.Mobile).Find(&users).Error
+		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
+			return &[]User{}, errors.New("User not found")
+		} else if err != nil {
+			return nil, err
+		}
+		return &users, nil
+	}
+	if u.Email != "" {
+		err := db.Where("email = ?", u.Email).Find(&users).Error
+		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
+			return &[]User{}, errors.New("User not found")
+		} else if err != nil {
+			return nil, err
+		}
+		return &users, nil
+	}
+	return &users, errors.New("User not found")
+}
+
+// UpdateUser updates a user.
+func (u *User) UpdateUser(db *gorm.DB) error {
+	if err := db.Updates(&u).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteUser deletes a user.
+func (u *User) DeleteUser(db *gorm.DB) error {
+	if err := db.Delete(&User{}, u.ID).Error; err != nil {
+		return err
+	}
+	return nil
 }

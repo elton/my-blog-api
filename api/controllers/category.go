@@ -105,6 +105,7 @@ func (s *Server) UpdateCategory(ctx *gin.Context) {
 }
 
 // DeleteCategory Delete a category.
+// curl -i -X DELETE http://localhost:8080/api/v1/categories/2
 func (s *Server) DeleteCategory(ctx *gin.Context) {
 	category := models.Category{}
 
