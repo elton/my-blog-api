@@ -25,5 +25,11 @@ func (s *Server) initializeRouter() {
 		v1.GET("/users/", middlewares.SetMiddlewareJSON(), s.FindUsersBy)
 		v1.PUT("/users/:id", middlewares.SetMiddlewareJSON(), s.UpdateUser)
 		v1.DELETE("/users/:id", middlewares.SetMiddlewareJSON(), s.DeleteUser)
+
+		// post routers
+		v1.POST("/posts/", middlewares.SetMiddlewareJSON(), s.CreatePost)
+		v1.GET("/posts/", middlewares.SetMiddlewareJSON(), s.FindPostsByUser)
+		v1.GET("/posts/:id", middlewares.SetMiddlewareJSON(), s.FindPostByID)
+		v1.GET("/postsbycat/:id", middlewares.SetMiddlewareJSON(), s.FindPostsByCategory)
 	}
 }

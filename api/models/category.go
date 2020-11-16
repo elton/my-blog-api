@@ -11,6 +11,7 @@ import (
 type Category struct {
 	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	Name      string    `gorm:"size:256;uniqueIndex:idx_name;not null" json:"name"`
+	Posts     []Post    `gorm:"many2many:post_categories" json:"posts"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Deleted   gorm.DeletedAt
@@ -33,8 +34,8 @@ func (c *Category) SaveCategory(db *gorm.DB) (*Category, error) {
 }
 
 // FindCategoryByID find a specific category by ID.
-func (c *Category) FindCategoryByID(db *gorm.DB, id uint64) (*Category, error) {
-	err := db.Where("id = ?", id).Take(&c).Error
+func (c *Category) FindCategoryByID(db *gorm.DB) (*Category, error) {
+	err := db.Where("id = ?", c.ID).Take(&c).Error
 	if err == gorm.ErrRecordNotFound {
 		return &Category{}, errors.New("Category Not Found")
 	} else if err != nil {

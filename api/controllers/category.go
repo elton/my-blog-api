@@ -39,8 +39,8 @@ func (s *Server) FindCategoryByID(ctx *gin.Context) {
 		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
 		return
 	}
-	category := models.Category{}
-	categoryGotten, err := category.FindCategoryByID(s.DB, id)
+	category := models.Category{ID: id}
+	categoryGotten, err := category.FindCategoryByID(s.DB)
 	if err != nil {
 		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
 		return
