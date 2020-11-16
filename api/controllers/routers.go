@@ -28,8 +28,8 @@ func (s *Server) initializeRouter() {
 
 		// post routers
 		v1.POST("/posts/", middlewares.SetMiddlewareJSON(), s.CreatePost)
-		v1.GET("/posts/", middlewares.SetMiddlewareJSON(), s.FindPostsByUser)
+		v1.GET("/posts/", middlewares.SetMiddlewareJSON(), s.FindPostsBy)
 		v1.GET("/posts/:id", middlewares.SetMiddlewareJSON(), s.FindPostByID)
-		v1.GET("/postsbycat/:id", middlewares.SetMiddlewareJSON(), s.FindPostsByCategory)
+		v1.GET("/posts", middlewares.SetMiddlewareJSON(), s.FindPosts)
 	}
 }

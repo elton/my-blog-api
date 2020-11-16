@@ -44,17 +44,30 @@ func (p *Post) Validate() error {
 }
 
 // SavePost save a post data in database.
-func (p *Post) SavePost(db *gorm.DB, uid uint64, cid uint64) (*Post, error) {
+func (p *Post) SavePost(db *gorm.DB, uid uint64, cids []uint64) (*Post, error) {
 	p.UserID = uid
-	category := Category{
-		ID: cid,
+	for _, cid := range cids {
+		var category Category
+		category.ID = cid
+		categoryGotten, err := category.FindCategoryByID(db)
+		if err != nil {
+			return nil, err
+		}
+		p.Categories = append(p.Categories, *categoryGotten)
 	}
-	categoryGotten, err := category.FindCategoryByID(db)
-	if err != nil {
+
+	if err := db.Create(&p).Error; err != nil {
 		return nil, err
 	}
-	p.Categories = append(p.Categories, *categoryGotten)
-	if err := db.Create(&p).Error; err != nil {
+	return p, nil
+}
+
+// FindPostByID find posts by post id.
+func (p *Post) FindPostByID(db *gorm.DB) (*Post, error) {
+	err := db.Preload("Categories").Find(&p).Error
+	if err == gorm.ErrRecordNotFound {
+		return &Post{}, errors.New("Post not found")
+	} else if err != nil {
 		return nil, err
 	}
 	return p, nil
@@ -72,19 +85,8 @@ func (p *Post) FindPostsByUser(db *gorm.DB, uid uint64) (*[]Post, error) {
 	return &posts, nil
 }
 
-// FindPostByID find posts by post id.
-func (p *Post) FindPostByID(db *gorm.DB) (*Post, error) {
-	err := db.Preload("Categories").Find(&p).Error
-	if err == gorm.ErrRecordNotFound {
-		return &Post{}, errors.New("Post not found")
-	} else if err != nil {
-		return nil, err
-	}
-	return p, nil
-}
-
 // FindPostsByCategory find posts by specific category.
-func (p *Post) FindPostsByCategory(db *gorm.DB, cid uint64) ([]Post, error) {
+func (p *Post) FindPostsByCategory(db *gorm.DB, cid uint64) (*[]Post, error) {
 	var (
 		category Category
 		posts    []Post
@@ -95,5 +97,26 @@ func (p *Post) FindPostsByCategory(db *gorm.DB, cid uint64) ([]Post, error) {
 	if err := db.Model(&category).Order("updated_at desc").Preload("Categories").Association("Posts").Find(&posts); err != nil {
 		return nil, err
 	}
-	return posts, nil
+	return &posts, nil
+}
+
+// FindPostsByTitle return posts by title.
+func (p *Post) FindPostsByTitle(db *gorm.DB, title string) (*[]Post, error) {
+	var posts []Post
+	err := db.Where("title like ?", "%"+title+"%").Find(&posts).Error
+	if err == gorm.ErrRecordNotFound || len(posts) <= 0 {
+		return &[]Post{}, errors.New("Posts not found")
+	} else if err != nil {
+		return nil, err
+	}
+	return &posts, nil
+}
+
+// FindPosts returns the top 100 posts.
+func (p *Post) FindPosts(db *gorm.DB) (*[]Post, error) {
+	var posts []Post
+	if err := db.Limit(100).Order("updated_at desc").Preload("Categories").Find(&posts).Error; err != nil {
+		return nil, err
+	}
+	return &posts, nil
 }
