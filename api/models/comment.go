@@ -17,3 +17,18 @@ type Comment struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Deleted   gorm.DeletedAt
 }
+
+// SaveComment Create a comment.
+// curl -i -X POST \
+//   http://127.0.0.1:8080/api/v1/comments/\?pid\=1\&uid\=1 \
+//   -H 'cache-control: no-cache' \
+//   -H 'content-type: application/json' \
+//   -d '{
+//         "title":"comment title II","content":"comment content","post_id":1,"user_id":1
+// }'
+func (c *Comment) SaveComment(db *gorm.DB) (*Comment, error) {
+	if err := db.Create(&c).Error; err != nil {
+		return nil, err
+	}
+	return c, nil
+}

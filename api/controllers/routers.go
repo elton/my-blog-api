@@ -33,5 +33,8 @@ func (s *Server) initializeRouter() {
 		v1.GET("/posts", middlewares.SetMiddlewareJSON(), s.FindPosts)
 		v1.PUT("/posts/:id", middlewares.SetMiddlewareJSON(), s.UpdatePost)
 		v1.DELETE("/posts/:id", middlewares.SetMiddlewareJSON(), s.DeletePost)
+
+		// comment routers
+		v1.POST("/comments/", middlewares.SetMiddlewareJSON(), s.CreateComment)
 	}
 }
