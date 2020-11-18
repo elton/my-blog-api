@@ -36,5 +36,7 @@ func (s *Server) initializeRouter() {
 
 		// comment routers
 		v1.POST("/comments/", middlewares.SetMiddlewareJSON(), s.CreateComment)
+		v1.GET("/comments/:id", middlewares.SetMiddlewareJSON(), s.FindCommentByID)
+		v1.GET("/comments/", middlewares.SetMiddlewareJSON(), s.FindCommentsBy)
 	}
 }

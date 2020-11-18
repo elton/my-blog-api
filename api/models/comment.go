@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -31,4 +32,35 @@ func (c *Comment) SaveComment(db *gorm.DB) (*Comment, error) {
 		return nil, err
 	}
 	return c, nil
+}
+
+// FindCommentByID returns a comment by id.
+func (c *Comment) FindCommentByID(db *gorm.DB) (*Comment, error) {
+	err := db.Where("id=?", c.ID).Take(&c).Error
+	if err == gorm.ErrRecordNotFound {
+		return &Comment{}, errors.New("Comment not found")
+	} else if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+// FindCommentsBy returns a list of comments by criterias.
+func (c *Comment) FindCommentsBy(db *gorm.DB) (*[]Comment, error) {
+	var (
+		comments []Comment
+		err      error
+	)
+	if c.UserID != 0 {
+		err = db.Where("user_id=?", c.UserID).Find(&comments).Error
+	} else if c.PostID != 0 {
+		err = db.Where("post_id=?", c.PostID).Find(&comments).Error
+	}
+	if err == gorm.ErrRecordNotFound {
+		return &[]Comment{}, errors.New("Comment not found")
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &comments, nil
 }
