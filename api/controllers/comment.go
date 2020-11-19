@@ -16,18 +16,6 @@ func (s *Server) CreateComment(ctx *gin.Context) {
 		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
 		return
 	}
-	// pid, err := strconv.ParseUint(ctx.Query("pid"), 10, 64)
-	// if err != nil {
-	// 	responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
-	// 	return
-	// }
-	// uid, err := strconv.ParseUint(ctx.Query("uid"), 10, 64)
-	// if err != nil {
-	// 	responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
-	// 	return
-	// }
-	// comment.PostID = pid
-	// comment.UserID = uid
 	commentGotton, err := comment.SaveComment(s.DB)
 	if err != nil {
 		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
@@ -84,7 +72,6 @@ func (s *Server) FindCommentsBy(ctx *gin.Context) {
 		}
 		responses.ResultJSON(ctx, http.StatusOK, comments, nil)
 	}
-
 }
 
 // UpdateComment updates a comment.
@@ -105,4 +92,19 @@ func (s *Server) UpdateComment(ctx *gin.Context) {
 		return
 	}
 	responses.ResultJSON(ctx, http.StatusOK, comment, nil)
+}
+
+// DeleteComment deletes a comment.
+func (s *Server) DeleteComment(ctx *gin.Context) {
+	cid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+	comment := models.Comment{ID: cid}
+	if err := comment.DeleteComment(s.DB); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusNoContent, nil, nil)
 }

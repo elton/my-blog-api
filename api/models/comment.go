@@ -72,3 +72,11 @@ func (c *Comment) UpdateComment(db *gorm.DB) error {
 	}
 	return nil
 }
+
+// DeleteComment deletes a comment.
+func (c *Comment) DeleteComment(db *gorm.DB) error {
+	if err := db.Delete(&Comment{}, c.ID).Error; err != nil {
+		return err
+	}
+	return nil
+}

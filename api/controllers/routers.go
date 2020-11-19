@@ -39,5 +39,6 @@ func (s *Server) initializeRouter() {
 		v1.GET("/comments/:id", middlewares.SetMiddlewareJSON(), s.FindCommentByID)
 		v1.GET("/comments/", middlewares.SetMiddlewareJSON(), s.FindCommentsBy)
 		v1.PUT("/comments/:id", middlewares.SetMiddlewareJSON(), s.UpdateComment)
+		v1.DELETE("/comments/:id", middlewares.SetMiddlewareJSON(), s.DeleteComment)
 	}
 }
