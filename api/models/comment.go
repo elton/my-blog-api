@@ -64,3 +64,11 @@ func (c *Comment) FindCommentsBy(db *gorm.DB) (*[]Comment, error) {
 
 	return &comments, nil
 }
+
+// UpdateComment updates a comment.
+func (c *Comment) UpdateComment(db *gorm.DB) error {
+	if err := db.Updates(&c).Error; err != nil {
+		return err
+	}
+	return nil
+}

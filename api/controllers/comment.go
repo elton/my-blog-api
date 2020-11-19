@@ -86,3 +86,23 @@ func (s *Server) FindCommentsBy(ctx *gin.Context) {
 	}
 
 }
+
+// UpdateComment updates a comment.
+func (s *Server) UpdateComment(ctx *gin.Context) {
+	cid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+	var comment models.Comment
+	if err := ctx.ShouldBindJSON(&comment); err != nil {
+		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
+		return
+	}
+	comment.ID = cid
+	if err := comment.UpdateComment(s.DB); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusOK, comment, nil)
+}
