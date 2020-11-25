@@ -13,7 +13,7 @@ import (
 func (s *Server) CreateComment(ctx *gin.Context) {
 	var comment *models.Comment
 	if err := ctx.ShouldBindJSON(&comment); err != nil {
-		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
 		return
 	}
 	commentGotton, err := comment.SaveComment(s.DB)

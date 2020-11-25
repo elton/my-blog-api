@@ -45,5 +45,6 @@ func (s *Server) initializeRouter() {
 		v1.POST("/likes/", middlewares.SetMiddlewareJSON(), s.CreateLike)
 		v1.GET("/likes/:id", middlewares.SetMiddlewareJSON(), s.FindLikeByID)
 		v1.GET("/likes/", middlewares.SetMiddlewareJSON(), s.FindLikesBy)
+		v1.PUT("/likes/:id", middlewares.SetMiddlewareJSON(), s.UpdateLike)
 	}
 }

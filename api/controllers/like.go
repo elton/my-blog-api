@@ -21,7 +21,7 @@ import (
 func (s *Server) CreateLike(ctx *gin.Context) {
 	var like *models.Like
 	if err := ctx.ShouldBindJSON(&like); err != nil {
-		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
 		return
 	}
 
@@ -76,4 +76,24 @@ func (s *Server) FindLikesBy(ctx *gin.Context) {
 		return
 	}
 	responses.ResultJSON(ctx, http.StatusOK, likes, nil)
+}
+
+// UpdateLike updates the given Like object
+func (s *Server) UpdateLike(ctx *gin.Context) {
+	lid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+	var like models.Like
+	if err := ctx.ShouldBindJSON(&like); err != nil {
+		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
+		return
+	}
+	like.ID = lid
+	if err := like.UpdateLike(s.DB); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusOK, like, nil)
 }

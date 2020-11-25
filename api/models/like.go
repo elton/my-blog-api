@@ -54,3 +54,11 @@ func (l *Like) FindLikesBy(db *gorm.DB) (*[]Like, error) {
 	}
 	return &likes, nil
 }
+
+// UpdateLike updates a Like object
+func (l *Like) UpdateLike(db *gorm.DB) error {
+	if err := db.Updates(&l).Error; err != nil {
+		return err
+	}
+	return nil
+}
