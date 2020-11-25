@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/elton/my-blog-api/api/models"
 	"github.com/elton/my-blog-api/api/responses"
@@ -30,4 +31,49 @@ func (s *Server) CreateLike(ctx *gin.Context) {
 		return
 	}
 	responses.ResultJSON(ctx, http.StatusCreated, likeGotton, nil)
+}
+
+// FindLikeByID returns the Like object by its ID.
+func (s *Server) FindLikeByID(ctx *gin.Context) {
+	lid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+	like := &models.Like{ID: lid}
+	likeGotton, err := like.FindLikeByID(s.DB)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusOK, likeGotton, nil)
+}
+
+// FindLikesBy returns a list of Like objects by given user id or post id.
+// curl -i http://localhost:8080/api/v1/likes/\?pid\=1
+func (s *Server) FindLikesBy(ctx *gin.Context) {
+	var like models.Like
+	if ctx.Query("uid") != "" {
+		uid, err := strconv.ParseUint(ctx.Query("uid"), 10, 64)
+		if err != nil {
+			responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+			return
+		}
+		like.UserID = uid
+	}
+
+	if ctx.Query("pid") != "" {
+		pid, err := strconv.ParseUint(ctx.Query("pid"), 10, 64)
+		if err != nil {
+			responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+			return
+		}
+		like.PostID = pid
+	}
+	likes, err := like.FindLikesBy(s.DB)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusOK, likes, nil)
 }

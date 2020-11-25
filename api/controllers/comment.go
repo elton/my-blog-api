@@ -50,12 +50,7 @@ func (s *Server) FindCommentsBy(ctx *gin.Context) {
 			return
 		}
 		comment.PostID = pid
-		comments, err := comment.FindCommentsBy(s.DB)
-		if err != nil {
-			responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
-			return
-		}
-		responses.ResultJSON(ctx, http.StatusOK, comments, nil)
+
 	}
 
 	if ctx.Query("uid") != "" {
@@ -65,13 +60,14 @@ func (s *Server) FindCommentsBy(ctx *gin.Context) {
 			return
 		}
 		comment.UserID = uid
-		comments, err := comment.FindCommentsBy(s.DB)
-		if err != nil {
-			responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
-			return
-		}
-		responses.ResultJSON(ctx, http.StatusOK, comments, nil)
 	}
+
+	comments, err := comment.FindCommentsBy(s.DB)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusOK, comments, nil)
 }
 
 // UpdateComment updates a comment.

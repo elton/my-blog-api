@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -22,4 +23,34 @@ func (l *Like) SaveLikes(db *gorm.DB) (*Like, error) {
 		return nil, err
 	}
 	return l, nil
+}
+
+// FindLikeByID returns a Like by id
+func (l *Like) FindLikeByID(db *gorm.DB) (*Like, error) {
+	err := db.Where("id=?", l.ID).Take(&l).Error
+	if err == gorm.ErrRecordNotFound {
+		return &Like{}, errors.New("Like not found")
+	} else if err != nil {
+		return nil, err
+	}
+	return l, nil
+}
+
+// FindLikesBy returns a list of Like by user id or post id.
+func (l *Like) FindLikesBy(db *gorm.DB) (*[]Like, error) {
+	var (
+		likes []Like
+		err   error
+	)
+	if l.UserID != 0 {
+		err = db.Where("user_id=?", l.UserID).Find(&likes).Error
+	} else if l.PostID != 0 {
+		err = db.Where("post_id=?", l.PostID).Find(&likes).Error
+	}
+	if err == gorm.ErrRecordNotFound {
+		return &[]Like{}, errors.New("Like not found")
+	} else if err != nil {
+		return nil, err
+	}
+	return &likes, nil
 }
