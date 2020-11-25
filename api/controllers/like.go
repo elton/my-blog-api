@@ -98,6 +98,7 @@ func (s *Server) UpdateLike(ctx *gin.Context) {
 	responses.ResultJSON(ctx, http.StatusOK, like, nil)
 }
 
+// DeleteLike deletes the given Like object by its ID.
 func (s *Server) DeleteLike(ctx *gin.Context) {
 	lid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
