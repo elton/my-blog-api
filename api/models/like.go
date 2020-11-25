@@ -62,3 +62,11 @@ func (l *Like) UpdateLike(db *gorm.DB) error {
 	}
 	return nil
 }
+
+// DeleteLike deletes a Like object
+func (l *Like) DeleteLike(db *gorm.DB) error {
+	if err := db.Delete(&Like{}, l.ID).Error; err != nil {
+		return err
+	}
+	return nil
+}

@@ -97,3 +97,17 @@ func (s *Server) UpdateLike(ctx *gin.Context) {
 	}
 	responses.ResultJSON(ctx, http.StatusOK, like, nil)
 }
+
+func (s *Server) DeleteLike(ctx *gin.Context) {
+	lid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		responses.ResultJSON(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+	like := models.Like{ID: lid}
+	if err := like.DeleteLike(s.DB); err != nil {
+		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+		return
+	}
+	responses.ResultJSON(ctx, http.StatusNoContent, nil, nil)
+}
