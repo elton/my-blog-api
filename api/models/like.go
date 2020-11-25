@@ -15,3 +15,11 @@ type Like struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Deleted   gorm.DeletedAt
 }
+
+// SaveLikes creates a new Like.
+func (l *Like) SaveLikes(db *gorm.DB) (*Like, error) {
+	if err := db.Create(&l).Error; err != nil {
+		return nil, err
+	}
+	return l, nil
+}

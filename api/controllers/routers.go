@@ -40,5 +40,8 @@ func (s *Server) initializeRouter() {
 		v1.GET("/comments/", middlewares.SetMiddlewareJSON(), s.FindCommentsBy)
 		v1.PUT("/comments/:id", middlewares.SetMiddlewareJSON(), s.UpdateComment)
 		v1.DELETE("/comments/:id", middlewares.SetMiddlewareJSON(), s.DeleteComment)
+
+		// like routers
+		v1.POST("/likes/", middlewares.SetMiddlewareJSON(), s.CreateLike)
 	}
 }
