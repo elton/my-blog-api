@@ -4,8 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/elton/my-blog-api/api/utils/crypto"
-
+	"github.com/elton/my-blog-api/api/utils"
 	"gorm.io/gorm"
 )
 
@@ -51,7 +50,7 @@ func (u *User) Validate() error {
 
 // SaveUser create a new user.
 func (u *User) SaveUser(db *gorm.DB) (*User, error) {
-	hashedpwd, err := crypto.HashAndSalt(u.Password)
+	hashedpwd, err := utils.HashAndSalt([]byte(u.Password))
 	if err != nil {
 		return nil, err
 	}
