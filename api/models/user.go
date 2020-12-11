@@ -85,52 +85,38 @@ func (u *User) FindUsers(db *gorm.DB) (*[]User, error) {
 // FindUsersBy returns a list of users matching the specific conditions.
 func (u *User) FindUsersBy(db *gorm.DB) (*[]User, error) {
 	users := []User{}
+	var err error
 
-	if u.Username != "" {
-		err := db.Where("username=?", u.Username).Find(&users).Error
-		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
-			return &[]User{}, errors.New("User not found")
-		} else if err != nil {
-			return nil, err
-		}
+	switch {
+	case u.Username != "":
+		err = db.Where("username=?", u.Username).Find(&users).Error
+	case u.Nickname != "":
+		err = db.Where("nickname like ?", "%"+u.Nickname+"%").Find(&users).Error
+	case u.Type == 1 || u.Type == 2:
+		err = db.Where("type = ?", u.Type).Find(&users).Error
+	case u.Mobile != "":
+		err = db.Where("mobile = ?", u.Mobile).Find(&users).Error
+	case u.Email != "":
+		err = db.Where("email = ?", u.Email).Find(&users).Error
 	}
-	if u.Nickname != "" {
-		err := db.Where("nickname like ?", "%"+u.Nickname+"%").Find(&users).Error
-		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
-			return &[]User{}, errors.New("User not found")
-		} else if err != nil {
-			return nil, err
-		}
-		return &users, nil
+	// if u.Username != "" {
+	// 	err = db.Where("username=?", u.Username).Find(&users).Error
+	// } else if u.Nickname != "" {
+	// 	err = db.Where("nickname like ?", "%"+u.Nickname+"%").Find(&users).Error
+	// } else if u.Type == 1 || u.Type == 2 {
+	// 	err = db.Where("type = ?", u.Type).Find(&users).Error
+	// } else if u.Mobile != "" {
+	// 	err = db.Where("mobile = ?", u.Mobile).Find(&users).Error
+	// } else if u.Email != "" {
+	// 	err = db.Where("email = ?", u.Email).Find(&users).Error
+	// }
+
+	if err == gorm.ErrRecordNotFound || len(users) <= 0 {
+		return &[]User{}, errors.New("User not found")
+	} else if err != nil {
+		return nil, err
 	}
-	if u.Type == 1 || u.Type == 2 {
-		err := db.Where("type = ?", u.Type).Find(&users).Error
-		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
-			return &[]User{}, errors.New("User not found")
-		} else if err != nil {
-			return nil, err
-		}
-		return &users, nil
-	}
-	if u.Mobile != "" {
-		err := db.Where("mobile = ?", u.Mobile).Find(&users).Error
-		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
-			return &[]User{}, errors.New("User not found")
-		} else if err != nil {
-			return nil, err
-		}
-		return &users, nil
-	}
-	if u.Email != "" {
-		err := db.Where("email = ?", u.Email).Find(&users).Error
-		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
-			return &[]User{}, errors.New("User not found")
-		} else if err != nil {
-			return nil, err
-		}
-		return &users, nil
-	}
-	return &users, errors.New("User not found")
+	return &users, nil
 }
 
 // UpdateUser updates a user.
