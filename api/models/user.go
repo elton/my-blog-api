@@ -99,17 +99,6 @@ func (u *User) FindUsersBy(db *gorm.DB) (*[]User, error) {
 	case u.Email != "":
 		err = db.Where("email = ?", u.Email).Find(&users).Error
 	}
-	// if u.Username != "" {
-	// 	err = db.Where("username=?", u.Username).Find(&users).Error
-	// } else if u.Nickname != "" {
-	// 	err = db.Where("nickname like ?", "%"+u.Nickname+"%").Find(&users).Error
-	// } else if u.Type == 1 || u.Type == 2 {
-	// 	err = db.Where("type = ?", u.Type).Find(&users).Error
-	// } else if u.Mobile != "" {
-	// 	err = db.Where("mobile = ?", u.Mobile).Find(&users).Error
-	// } else if u.Email != "" {
-	// 	err = db.Where("email = ?", u.Email).Find(&users).Error
-	// }
 
 	if err == gorm.ErrRecordNotFound || len(users) <= 0 {
 		return &[]User{}, errors.New("User not found")
@@ -121,6 +110,14 @@ func (u *User) FindUsersBy(db *gorm.DB) (*[]User, error) {
 
 // UpdateUser updates a user.
 func (u *User) UpdateUser(db *gorm.DB) error {
+	if u.Password != "" {
+		hashedpwd, err := utils.HashAndSalt([]byte(u.Password))
+		if err != nil {
+			return err
+		}
+
+		u.Password = string(hashedpwd)
+	}
 	// Updates只更新不为空的字段
 	if err := db.Updates(&u).Error; err != nil {
 		return err
