@@ -47,5 +47,8 @@ func (s *Server) initializeRouter() {
 		v1.GET("/likes/", middlewares.SetMiddlewareJSON(), s.FindLikesBy)
 		v1.PUT("/likes/:id", middlewares.SetMiddlewareJSON(), s.UpdateLike)
 		v1.DELETE("/likes/:id", middlewares.SetMiddlewareJSON(), s.DeleteLike)
+
+		// Auth routers
+		v1.POST("/login", middlewares.SetMiddlewareJSON(), s.Login)
 	}
 }

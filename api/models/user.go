@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"time"
+	"github.com/elton/my-blog-api/utils/crypto"
 
 	"gorm.io/gorm"
 )
@@ -10,7 +11,9 @@ import (
 // User represents a user.
 type User struct {
 	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	Nickname  string    `gorm:"size:256;not null;uniqueIndex:idx_nickname;" json:"nickname"`
+	Username  string    `gorm:"size:256;not null;uniqueIndex:idx_userame;" json:"username"`
+	Password  string    `gorm:"size:256;not null" json:"password"`
+	Nickname  string    `gorm:"size:256;uniqueIndex:idx_nickname;" json:"nickname"`
 	Type      uint8     `gorm:"not null;index:idx_type;default:1;comment:1:user, 2:admin" json:"type"`
 	Mobile    string    `gorm:"size:16;not null;uniqueIndex:idx_mobile;" json:"mobile"`
 	Email     string    `gorm:"size:128;not null;uniqueIndex:idx_email;" json:"email"`
@@ -24,6 +27,12 @@ type User struct {
 
 // Validate validates the user's struct.
 func (u *User) Validate() error {
+	if u.Username == "" {
+		return errors.New("Username field for user is required")
+	}
+	if u.Password == "" {
+		return errors.New("Password field for user is required")
+	}
 	if u.Nickname == "" {
 		return errors.New("Nickname field for user is required")
 	}
@@ -41,6 +50,8 @@ func (u *User) Validate() error {
 
 // SaveUser create a new user.
 func (u *User) SaveUser(db *gorm.DB) (*User, error) {
+	hashed, err := crypto.HashAndSalt(u.Password)
+	
 	if err := db.Create(&u).Error; err != nil {
 		return nil, err
 	}
