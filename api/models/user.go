@@ -86,6 +86,14 @@ func (u *User) FindUsers(db *gorm.DB) (*[]User, error) {
 func (u *User) FindUsersBy(db *gorm.DB) (*[]User, error) {
 	users := []User{}
 
+	if u.Username != "" {
+		err := db.Where("username=?", u.Username).Find(&users).Error
+		if err == gorm.ErrRecordNotFound || len(users) <= 0 {
+			return &[]User{}, errors.New("User not found")
+		} else if err != nil {
+			return nil, err
+		}
+	}
 	if u.Nickname != "" {
 		err := db.Where("nickname like ?", "%"+u.Nickname+"%").Find(&users).Error
 		if err == gorm.ErrRecordNotFound || len(users) <= 0 {

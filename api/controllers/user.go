@@ -72,6 +72,7 @@ func (s *Server) FindUsersBy(ctx *gin.Context) {
 	}
 
 	user := models.User{
+		Username: ctx.Query("username"),
 		Nickname: ctx.Query("nickname"),
 		Type:     uint8(t),
 		Mobile:   ctx.Query("mobile"),
