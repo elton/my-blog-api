@@ -3,7 +3,8 @@ package models
 import (
 	"errors"
 	"time"
-	"github.com/elton/my-blog-api/utils/crypto"
+
+	"github.com/elton/my-blog-api/api/utils/crypto"
 
 	"gorm.io/gorm"
 )
@@ -50,8 +51,12 @@ func (u *User) Validate() error {
 
 // SaveUser create a new user.
 func (u *User) SaveUser(db *gorm.DB) (*User, error) {
-	hashed, err := crypto.HashAndSalt(u.Password)
-	
+	hashedpwd, err := crypto.HashAndSalt(u.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	u.Password = string(hashedpwd)
 	if err := db.Create(&u).Error; err != nil {
 		return nil, err
 	}
