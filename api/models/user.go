@@ -101,7 +101,7 @@ func (u *User) FindUsersBy(db *gorm.DB) (*[]User, error) {
 	}
 
 	if err == gorm.ErrRecordNotFound || len(users) <= 0 {
-		return &[]User{}, errors.New("User not found")
+		return &[]User{}, gorm.ErrRecordNotFound
 	} else if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/elton/my-blog-api/api/models"
 	"github.com/elton/my-blog-api/api/responses"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // CreateUser creates a new user.
@@ -78,12 +79,22 @@ func (s *Server) FindUsersBy(ctx *gin.Context) {
 		Mobile:   ctx.Query("mobile"),
 		Email:    ctx.Query("email"),
 	}
-	usersGotton, err := user.FindUsersBy(s.DB)
-	if err != nil {
-		responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
-		return
+	usersGotten, err := user.FindUsersBy(s.DB)
+
+	switch {
+	case err == gorm.ErrRecordNotFound:
+		{
+			responses.ResultJSON(ctx, http.StatusOK, nil, err)
+			return
+		}
+	case err != nil:
+		{
+			responses.ResultJSON(ctx, http.StatusInternalServerError, nil, err)
+			return
+		}
+	default:
+		responses.ResultJSON(ctx, http.StatusOK, usersGotten, nil)
 	}
-	responses.ResultJSON(ctx, http.StatusOK, usersGotton, nil)
 }
 
 // UpdateUser  updates a user.
