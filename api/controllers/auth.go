@@ -58,6 +58,10 @@ func (s *Server) Login(ctx *gin.Context) {
 		}
 
 		responses.ResultJSON(ctx, http.StatusOK, ss, nil)
+	} else { // 没有找到就意味着登录的这个用户不存在或者用户名密码错误
+		err = errors.New("Invalid user credentials")
+		responses.ResultJSON(ctx, http.StatusOK, nil, err)
+		return
 	}
 }
 

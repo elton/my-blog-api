@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -20,6 +21,14 @@ func (s *Server) CreateUser(ctx *gin.Context) {
 
 	if err := user.Validate(); err != nil {
 		responses.ResultJSON(ctx, http.StatusUnprocessableEntity, nil, err)
+		return
+	}
+
+	// 判断用户名是否已经存在，存在就抛出用户已经存在的err，其他字段存在则直接报500错误，
+	// 并抛出“Error 1062: Duplicate entry”类似的错误信息。
+	if users, _ := user.FindUsersBy(s.DB); len(*users) > 0 {
+		err := errors.New("User already exists")
+		responses.ResultJSON(ctx, http.StatusOK, nil, err)
 		return
 	}
 

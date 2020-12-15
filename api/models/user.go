@@ -33,17 +33,14 @@ func (u *User) Validate() error {
 	if u.Password == "" {
 		return errors.New("Password field for user is required")
 	}
-	if u.Nickname == "" {
-		return errors.New("Nickname field for user is required")
-	}
 	if u.Mobile == "" {
 		return errors.New("Mobile field for user is required")
 	}
 	if u.Email == "" {
 		return errors.New("Email field for user is required")
 	}
-	if u.Type != 1 && u.Type != 2 {
-		return errors.New("ID field for user is invalid")
+	if u.Type != 0 && u.Type != 1 && u.Type != 2 {
+		return errors.New("Type for user is invalid")
 	}
 	return nil
 }
